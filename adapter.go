@@ -23,7 +23,7 @@ type Adapter struct {
 }
 
 // NewAdapter returns a new casbin postgresql adapter
-func NewAdapter(db *sql.DB, tableName string) (*Adapter, error) {
+func NewAdapter(db *sql.DB, tableName string, autoSetup bool) (*Adapter, error) {
 	casbinRuleRepository := repository.NewCasbinRuleRepository(tableName, db)
 	adapter := &Adapter{
 		db,
@@ -31,8 +31,10 @@ func NewAdapter(db *sql.DB, tableName string) (*Adapter, error) {
 		casbinRuleRepository,
 	}
 
-	if err := adapter.setup(); err != nil {
-		return nil, err
+	if autoSetup {
+		if err := adapter.setup(); err != nil {
+			return nil, err
+		}
 	}
 
 	return adapter, nil
